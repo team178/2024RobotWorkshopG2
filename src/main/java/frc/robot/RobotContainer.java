@@ -20,11 +20,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    altController.a().onTrue(shooter.runShoot());
-    altController.a().onFalse(shooter.runRest());
+    shooter.setDefaultCommand(shooter.runShooter(altController.a()::getAsBoolean, altController.b()::getAsBoolean));
+
+   
+    // altController.a().onTrue(shooter.runSetSlow(true));
+    // altController.a().onFalse(shooter.runSetSlow(false));
+    // altController.b().onTrue(shooter.runSetFast(true));
+    // altController.b().onFalse(shooter.runSetFast(false));
+
   }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
   }
+
+  
 }
