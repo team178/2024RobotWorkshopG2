@@ -20,13 +20,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    shooter.setDefaultCommand(shooter.runShooter(altController.a()::getAsBoolean, altController.b()::getAsBoolean));
-
+    // shooter.setDefaultCommand(shooter.runShooter(altController.a()::getAsBoolean, altController.b()::getAsBoolean));
    
-    // altController.a().onTrue(shooter.runSetSlow(true));
-    // altController.a().onFalse(shooter.runSetSlow(false));
-    // altController.b().onTrue(shooter.runSetFast(true));
-    // altController.b().onFalse(shooter.runSetFast(false));
+    altController.a().onTrue(shooter.runSetSlow(true));
+    altController.a().onFalse(shooter.runSetSlow(false));
+    altController.b().onTrue(shooter.runSetFast(true));
+    altController.b().onFalse(shooter.runSetFast(false));
 
   }
 
