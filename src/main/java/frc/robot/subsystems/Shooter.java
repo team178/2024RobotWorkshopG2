@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,8 +16,10 @@ public class Shooter extends SubsystemBase {
     private CANSparkMax shooterUpperMotor;
     private CANSparkMax shooterIndexMotor;
 
-    private boolean slow;
-    private boolean fast;
+    private boolean in;
+    private boolean out;
+
+    private DigitalInput photosensor;
 
     public Shooter() {
         shooterLowerMotor = new CANSparkMax(ShooterConstants.kLowerMotorCANID, MotorType.kBrushless);
@@ -31,16 +34,22 @@ public class Shooter extends SubsystemBase {
         shooterUpperMotor.burnFlash();
         shooterIndexMotor.burnFlash();
 
-        slow = false;
-        fast = false;
+        photosensor = new DigitalInput(ShooterConstants.kPhotosensorDIO);
+
+        in = false;
+        out = false;
     }
 
-    public void setSlow(boolean slow) {
-        this.slow = slow;
+    public void setIn(boolean slow) {
+        this.in = slow;
     }
 
-    public void setFast(boolean fast) {
-        this.fast = fast;
+    public void setOut(boolean fast) {
+        this.out = fast;
+    }
+
+    public boolean getPhotosensor() {
+        return !photosensor.get();
     }
 
     public void shoot(double speed) {
@@ -49,63 +58,15 @@ public class Shooter extends SubsystemBase {
         shooterIndexMotor.setVoltage(-1*speed);
     }
 
-    public void shoot() {
-        shooterLowerMotor.setVoltage(-3);
-        shooterUpperMotor.setVoltage(3);
-        shooterIndexMotor.setVoltage(-3);
-    }
-
-    public void rest() {
-        shooterLowerMotor.setVoltage(0);
-        shooterUpperMotor.setVoltage(0);
-        shooterIndexMotor.setVoltage(0);
-    }
-
-    public Command runSetSlow(boolean slow) {
-        return runOnce(() -> setSlow(slow));
-    }
-
-    public Command runSetFast(boolean fast) {
-        return runOnce(() -> setFast(fast));
-    }
-
-    public Command runShooter(BooleanSupplier slow, BooleanSupplier fast) {
-        return run(() -> {
-            if(fast.getAsBoolean()) {
-                shoot(6);
-            } else if(slow.getAsBoolean()) {
-                shoot();
-            } else {
-                rest();
-            }
-        });
-    }
-
-    public Command runShoot() {
-        return runOnce(() -> shoot());
-    }
-
-        public Command runShoot(double speed) {
-            return runOnce(() -> shoot(speed));
-
-        }
-
-    public Command runRest() {
-        return runOnce(() -> rest());
+    public Command runShoot(double speed) {
+        return runOnce(() -> shoot(speed));
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("shooter/slow", slow);
-        SmartDashboard.putBoolean("shooter/fast", fast);
+        SmartDashboard.putBoolean("shooter/slow", in);
+        SmartDashboard.putBoolean("shooter/fast", out);
         SmartDashboard.putNumber("speed", shooterUpperMotor.getEncoder().getVelocity());
-
-        if(fast) {
-            shoot(6);
-        } else if(slow) {
-            shoot();
-        } else {
-            rest();
-        }
+        SmartDashboard.putBoolean("photosensor", !photosensor.get()); // not because flipped
     }
 }
