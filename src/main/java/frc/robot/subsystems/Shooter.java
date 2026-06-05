@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
+    private CANSparkMax armMotor;
     private CANSparkMax shooterLowerMotor;
     private CANSparkMax shooterUpperMotor;
     private CANSparkMax shooterIndexMotor;
@@ -21,15 +22,20 @@ public class Shooter extends SubsystemBase {
 
     private DigitalInput photosensor;
 
+    private ShooterPosition shooterPosition;
+
     public Shooter() {
+        armMotor = new CANSparkMax(ShooterConstants.kArmMotorCANID, MotorType.kBrushless);
         shooterLowerMotor = new CANSparkMax(ShooterConstants.kLowerMotorCANID, MotorType.kBrushless);
         shooterUpperMotor = new CANSparkMax(ShooterConstants.kUpperMotorCANID, MotorType.kBrushless);
         shooterIndexMotor = new CANSparkMax(ShooterConstants.kIndexMotorCANID, MotorType.kBrushless);
 
+        armMotor.restoreFactoryDefaults();
         shooterLowerMotor.restoreFactoryDefaults();
         shooterUpperMotor.restoreFactoryDefaults();
         shooterIndexMotor.restoreFactoryDefaults();
 
+        armMotor.burnFlash();
         shooterLowerMotor.burnFlash();
         shooterUpperMotor.burnFlash();
         shooterIndexMotor.burnFlash();
@@ -38,6 +44,8 @@ public class Shooter extends SubsystemBase {
 
         in = false;
         out = false;
+
+        shooterPosition = ShooterPosition.FLAT;
     }
 
     public void setIn(boolean slow) {
